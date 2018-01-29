@@ -1,0 +1,2 @@
+UID,Base currency,Quote currency,Action,Quantity (#base),Rate (Quote currency),Amount (Quote currency),Commission (Quote currency),Timestamp,Exchange
+aaaaabbbbbcccccddddd45,BTC,BTC,DEPOSIT,1,1,1,0,1506647704,bittrex
