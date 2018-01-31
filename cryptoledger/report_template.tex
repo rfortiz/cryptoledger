@@ -60,7 +60,6 @@ Wonderland
 \subsection*{Transactions from \VAR{start_date} to \VAR{end_date}}
 \begin{tiny}
 \begin{longtable}{p{0.25\linewidth}p{0.03\linewidth}p{0.03\linewidth}p{0.06\linewidth}p{0.06\linewidth}p{0.06\linewidth}p{0.06\linewidth}p{0.06\linewidth}p{0.13\linewidth}p{0.05\linewidth}}
-\caption{List of transactions.}\\
 
 
 \toprule
@@ -83,7 +82,7 @@ Wonderland
 
 
 \BLOCK{for row in ledger_table}
-\seqsplit{\VAR{row.uid}} & \VAR{row.base_c} & \VAR{row.quote_c} & \VAR{row.action} & \VAR{row.qty} & \VAR{row.rate} & \VAR{row.rate} & \VAR{row.commission} & \VAR{row.timestamp} & \VAR{row.exchange} \\
+\seqsplit{\VAR{row.uid}} & \VAR{row.base_c} & \VAR{row.quote_c} & \VAR{row.action} & \VAR{row.qty} & \VAR{row.rate} & \VAR{row.amount} & \VAR{row.commission} & \VAR{row.timestamp} & \VAR{row.exchange} \\
 \BLOCK{endfor}
 	
 \end{longtable}

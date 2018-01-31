@@ -1,27 +1,14 @@
 #!/usr/bin/env python3
 
 """
-* Import csv transaction lists exported from exchanges (bittrex and gdax supported) and consolidate them in a standardize csv file without duplicates.
-* Calculate a portfolio on any given dates using the transaction list.
-* Estimate its value in currency specified in argument using cryptocompare API.
-* Plot portfolio pie chart and daily valuation, return for a given period.
-* Create a corresponding PDF report formatted a Latex template.
+Cryptoledger is a tool to keep track of cryptocurrency transactions
+
+* Imports *.csv transaction lists exported from exchanges (bittrex and gdax supported) and consolidates them in a standardize *.csv file without duplicates.
+* Calculate a portfolio on any given dates using the transaction list
+* Estimate its value in specified currency using cryptocompare API
+* Plot a portfolio pie chart, daily valuation and daily return for a given period
+* Create a corresponding PDF report formatted with a Latex template
 """
-
-# TODO
-# document usage, ledger format, cvs naming style, in particular withdraw/deposit, altex template
-# python version used and operating system, Latex distribution installed
-# documentation, fake data example, license, github
-# refer sources 
-
-# improvements?
-# don't recalculate portfolio everytime, calculate portfolio from last calculated day instead of starting from scratch
-# for efficiency could look into sparse array
-# transactions could be handled by pandas dataframe
-# check for unmatched movements
-# more handling of potential errors (invalid transaction, api offline, etc.)
-
- 
 
 import sys # system specific package (e.g. provide argv for command line arguments)
 import argparse # command line parser
@@ -307,7 +294,7 @@ class Portfolio:
         
     def evaluate(self):
         """ Use cryptocomapre API to evaluate portfolio in given currency """
-        # load backup file if exist and compare hash of previous p_raw to current p_raw before calling cryptocompare API (slow)
+        # load backup file if exist and compare hash of previous p_raw to current p_raw before getting historical data cryptocompare API (slow)
         
         # create a tmp dir in the same folder as the as the ledger csv
         tmp_dir = os.path.dirname(os.path.abspath(self.ledger.csv_db_path)) + '/tmp' 
@@ -498,7 +485,7 @@ class Report:
         report_vars['eval_symbol'] = self.portfolio.eval_symbol
         report_vars['start_date'] = first_date
         report_vars['end_date'] = last_date
-        report_vars['portfolio_snapshot'] = self.portfolio.snapshot_to_latex() # uses pandas to_latex function with an extra \midrule before last line. For more control over latex formatting use Jinja2 with for loop block as done for the transactions list in ledger
+        report_vars['portfolio_snapshot'] = self.portfolio.snapshot_to_latex() # uses pandas to_latex function with an extra \midrule before last line. For more control over latex formatting could use Jinja2 with for loop block as done for the transactions list in ledger
         report_vars['ledger_header'] = Transaction.fieldnames_exp
         report_vars['ledger_table'] = self.portfolio.ledger.to_list(first_date, last_date)
         
@@ -529,7 +516,7 @@ class Report:
             trim_blocks = True,
             autoescape = False,
             loader = jinja2.FileSystemLoader(os.path.abspath('/'))
-        )
+        ) # See http://akuederle.com/Automatization-with-Latex-and-Python-2 for more info
         template = latex_jinja_env.get_template(template_file)
         return template
         
@@ -540,12 +527,12 @@ def main(argv):
     # handle command line paramters
     parser = argparse.ArgumentParser() # initialize parser
     parser = argparse.ArgumentParser(description='Program description')
-    parser.add_argument('ledger_db', type=str, nargs='?', default='ledger.csv', help='path to the ledger')
-    parser.add_argument('-a','--add', metavar='folder_path', type=str, help="add transactions in all csv files in given folder to ledger")
+    parser.add_argument('ledger_db', type=str, help='path to the ledger *.csv file')
+    parser.add_argument('-a','--add', metavar='csvs_folder_path', type=str, help="add transactions in all csv files in given folder to ledger")
     parser.add_argument('-m','--manual', action='store_true', help="manual transaction input") 
     parser.add_argument('-e','--export', action='store_true' , help='export pdf report')
     parser.add_argument('--currency', metavar='symbol', default='EUR', type=str, help="report currency (default: %(default)s)'")
-    parser.add_argument('--start_date', metavar='date', default='first', type=str, help="report starting date fromatted as YYYY-MM-DD (default: %(default)s)'")
+    parser.add_argument('--start_date', metavar='date', default='first', type=str, help="report starting date formatted as YYYY-MM-DD (default: %(default)s)'")
     parser.add_argument('--end_date', metavar='date', default='last', type=str, help="report ending date fromatted as YYYY-MM-DD (default: %(default)s)'")
     args = parser.parse_args()
     
@@ -554,8 +541,8 @@ def main(argv):
     
     # import transactions from csv
     if args.add is not None:
-        print('importing *.csv from folder: ', args.add)
-        for filename in os.listdir(args.add):
+        print('importing *.csv from folder: ', os.path.abspath(args.add))
+        for filename in os.listdir(os.path.abspath(args.add)):
             if filename.endswith('.csv'):
                 file_path = args.add + '/' + filename
                 print('Importing:', file_path)
